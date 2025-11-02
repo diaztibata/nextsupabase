@@ -27,8 +27,8 @@ interface Actividad {
     nota: number | null;
     imagen: string | null;
     creado_en: string;
-    estudiante: Estudiante[];
-    curso: Curso[];
+    estudiante: Estudiante[] | Estudiante | null;
+    curso: Curso[] | Curso | null;
 }
 
 export default function AdminPage() {
@@ -121,6 +121,19 @@ export default function AdminPage() {
         }
     };
 
+    // Helpers para obtener nombres desde la respuesta de Supabase
+    const nombreEstudianteDe = (est: Estudiante[] | Estudiante | null) => {
+        if (!est) return "Estudiante no encontrado";
+        if (Array.isArray(est)) return est[0]?.nombre ?? "Estudiante no encontrado";
+        return est.nombre ?? "Estudiante no encontrado";
+    };
+
+    const nombreCursoDe = (cur: Curso[] | Curso | null) => {
+        if (!cur) return "Curso no encontrado";
+        if (Array.isArray(cur)) return cur[0]?.nombre ?? "Curso no encontrado";
+        return cur.nombre ?? "Curso no encontrado";
+    };
+
     useEffect(() => {
         const verificarAdmin = async () => {
             const { data } = await supabase.auth.getUser();
@@ -169,8 +182,8 @@ export default function AdminPage() {
                     <tbody>
                         {actividades.map((act) => (
                             <tr key={act.id}>
-                                <td className="border p-2">{act.estudiante[0]?.nombre ?? 'Estudiante no encontrado'}</td>
-                                <td className="border p-2">{act.curso[0]?.nombre ?? 'Curso no encontrado'}</td>
+                                <td className="border p-2">{nombreEstudianteDe(act.estudiante)}</td>
+                                <td className="border p-2">{nombreCursoDe(act.curso)}</td>
                                 <td className="border p-2">{act.titulo}</td>
                                 <td className="border p-2">{act.tipo}</td>
                                 <td className="border p-2">
